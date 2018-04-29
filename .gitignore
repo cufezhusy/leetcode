@@ -1,0 +1,21 @@
+# normal stuff
+*.asv 
+*.m~ 
+*.mex* 
+*.log
+*.log.html
+*.pyc
+*.xml
+*.iml
+*.xls
+*.xlsx
+*.pickle
+*.swp
+**/*.egg-info/*
+*.doctree
+*.json
+*.csv
+*.yaml
+*.npz
+*.sqllite
+Thumbs.db
