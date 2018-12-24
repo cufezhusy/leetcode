@@ -1,1 +1,1 @@
-Some code for self study purpose
+For my leetcode exercise

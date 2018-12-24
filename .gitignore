@@ -18,4 +18,5 @@
 *.yaml
 *.npz
 *.sqllite
+.idea/
 Thumbs.db
