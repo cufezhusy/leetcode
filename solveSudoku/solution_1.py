@@ -1,6 +1,10 @@
 import collections
 import copy
-import datetime
+
+# ===================================================================================
+# https://leetcode.com/submissions/detail/196953828/
+# Accepted
+# ===================================================================================
 
 
 class Solution(object):
@@ -23,6 +27,8 @@ class Solution(object):
         out['dict_row'] = collections.defaultdict(list)
         out['dict_col'] = collections.defaultdict(list)
         out['dict_box'] = collections.defaultdict(list)
+
+        # Go through the input board once to collect information
         for i in range(9):
             for j in range(9):
                 num = board[i][j]
@@ -33,11 +39,13 @@ class Solution(object):
                     out['dict_col'][j].append(num)
                     out['dict_box'][3 * (i // 3) + (j // 3)].append(num)
 
+        # Get all possible elements for each column,row and box
         for k in range(9):
             out['dict_row'][k] = list(set(all_possible_solutions) - set(out['dict_row'][k]))
             out['dict_col'][k] = list(set(all_possible_solutions) - set(out['dict_col'][k]))
             out['dict_box'][k] = list(set(all_possible_solutions) - set(out['dict_box'][k]))
 
+        # Work out all possible numbers for each cell
         out['branches'] = {}
         for (i, j) in out['possible_branch']:
             possible_nums =[]
@@ -49,17 +57,26 @@ class Solution(object):
         return out
 
     def solve(self,status):
+        # If no branch need go through, we have found the solution!
         if len(status['branches']) ==0: return status
+
+        # Otherwise, we go through each possible elements and check whether the solution is still feasible at this moment
         for (i,j),possible_nums in status['branches'].items():
             for num in possible_nums:
                 valid = (num in status['dict_row'][i]) & (num in status['dict_col'][j]) & (num in status['dict_box'][3 * (i // 3) + (j // 3)])
                 if not valid:
                     status['branches'][(i, j)].remove(num)
+                    # If the current cell do not have any possible scenario to explore, we should cut the branch
                     if len(status['branches'][(i, j)]) == 0:
                         return None
 
-        for (i,j),possible_nums in status['branches'].items():
+        # Let the algorithm start with the minimum possible cells
+        order_list = sorted(status['branches'].keys(), key=lambda x: len(status['branches'][x]))
+
+        for (i,j) in order_list:
+            possible_nums = status['branches'][(i, j)]
             for num in possible_nums:
+                # Create a new status object, be careful here, we need use deepcopy!
                 new_status = copy.deepcopy(status)
                 new_status['solutions'][(i,j)] = num
                 new_status['branches'].pop((i,j))
@@ -70,7 +87,9 @@ class Solution(object):
                 if try_solve is not None:
                     return try_solve
                 else:
+                    # This solution has tried, and we don't have try again later
                     status['branches'][(i,j)].remove(num)
+                    # Cut the branches if not feasible
                     if len(status['branches'][(i,j)]) == 0:
                         return None
 
